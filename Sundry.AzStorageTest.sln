@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33103.201
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0D6D069D-7252-4856-B992-039950BF87B3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0E5782E9-FF65-4027-956D-C8302C4F5054}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemUnderTest", "src\SystemUnderTest\SystemUnderTest.csproj", "{C108AA6A-78AD-4A0D-8AEE-CD1A1CCAC3D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C108AA6A-78AD-4A0D-8AEE-CD1A1CCAC3D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C108AA6A-78AD-4A0D-8AEE-CD1A1CCAC3D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C108AA6A-78AD-4A0D-8AEE-CD1A1CCAC3D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C108AA6A-78AD-4A0D-8AEE-CD1A1CCAC3D2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C108AA6A-78AD-4A0D-8AEE-CD1A1CCAC3D2} = {0D6D069D-7252-4856-B992-039950BF87B3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7EA6F608-FF20-4048-871C-180417747D45}
+	EndGlobalSection
+EndGlobal
