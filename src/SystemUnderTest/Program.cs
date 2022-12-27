@@ -4,14 +4,14 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.IO;
-using System.Reflection.Metadata;
-using SystemUnderTest;
-using static System.Reflection.Metadata.BlobBuilder;
-
+using SystemUnderTest.Interface;
 
 using IHost host = Host
     .CreateDefaultBuilder(args)
+    .ConfigureServices((context, services) =>
+    {
+        services.AddSingleton<IAzBlobService, AzBlobService>();
+    })
     .ConfigureAppConfiguration((context, config) =>
     {
         config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -27,24 +27,15 @@ await host.RunAsync();
 
 static async Task UploadFileToAzBlob(IServiceProvider services)
 {
-    var config = services.GetRequiredService<IConfiguration>();
-    var azBlobConnectionString = config.GetValue<string>("AzBlobSettings:ConnectionString");
-    var azBlobContainerName = config.GetValue<string>("AzBlobSettings:ContainerName");
-    var fileName = config.GetValue<string>("AzBlobSettings:FileName")!;
+    var azBlobService = services.GetRequiredService<IAzBlobService>();
+    var result = await azBlobService.UploadFileToAzBlob("samplefile.txt");
 
-    using FileStream stream = new(fileName, FileMode.Open);
-    
-    BlobContainerClient container = new (azBlobConnectionString, azBlobContainerName);
-
-    await container.CreateIfNotExistsAsync();
-
-    try
+    if (result)
     {
-        var client = container.GetBlobClient(fileName);
-        await client.UploadAsync(stream);
+        Console.WriteLine("File uploaded successfully");
     }
-    catch (Exception)
+    else
     {
-        throw;
+        Console.WriteLine("File upload failed");
     }
 }
