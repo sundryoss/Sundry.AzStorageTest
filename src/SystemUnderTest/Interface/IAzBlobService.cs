@@ -10,7 +10,7 @@ namespace SystemUnderTest.Interface
 {
     public interface IAzBlobService
     {
-        Task<bool> UploadFileToAzBlob(string fileName);
+        Task<bool> UploadFileToAzBlobAsync(string fileName);
     }
 
     public class AzBlobService : IAzBlobService
@@ -22,7 +22,7 @@ namespace SystemUnderTest.Interface
             azBlobConnectionString = configuration.GetValue<string>("AzBlobSettings:ConnectionString")!;
             azBlobContainerName = configuration.GetValue<string>("AzBlobSettings:ContainerName")!;
         }
-        public async Task<bool> UploadFileToAzBlob(string fileName)
+        public async Task<bool> UploadFileToAzBlobAsync(string fileName)
         {
             using FileStream stream = new(fileName, FileMode.Open);
 
@@ -36,9 +36,9 @@ namespace SystemUnderTest.Interface
                 await client.UploadAsync(stream);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Supress exception
+                Console.WriteLine($"Unable to upload blob. Reason :{ex.Message}");
                 return false;
             }
         }

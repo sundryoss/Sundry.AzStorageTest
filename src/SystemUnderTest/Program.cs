@@ -13,7 +13,7 @@ namespace SystemUnderTest
         {
             var host = CreateHostBuilder(args).Build();
             var azBlobService = host.Services.GetRequiredService<IAzBlobService>();
-            await UploadFileToAzBlob(azBlobService);
+            await UploadFileToAzBlobAsync(azBlobService);
 
             await host.RunAsync();
         }
@@ -31,9 +31,9 @@ namespace SystemUnderTest
                       .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
             });
 
-        public static async Task UploadFileToAzBlob(IAzBlobService azBlobService)
+        public static async Task UploadFileToAzBlobAsync(IAzBlobService azBlobService)
         {
-            var result = await azBlobService.UploadFileToAzBlob("samplefile.txt");
+            var result = await azBlobService.UploadFileToAzBlobAsync("samplefile.txt");
 
             if (result)
             {
