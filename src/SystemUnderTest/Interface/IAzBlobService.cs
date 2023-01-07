@@ -36,9 +36,9 @@ namespace SystemUnderTest.Interface
                 await client.UploadAsync(stream);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Supress exception
+                Console.WriteLine($"Unable to upload blob. Reason :{ex.Message}" );
                 return false;
             }
         }
