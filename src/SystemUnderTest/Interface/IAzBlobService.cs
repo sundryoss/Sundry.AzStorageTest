@@ -25,13 +25,11 @@ namespace SystemUnderTest.Interface
         public async Task<bool> UploadFileToAzBlob(string fileName)
         {
             using FileStream stream = new(fileName, FileMode.Open);
-
             BlobContainerClient container = new(azBlobConnectionString, azBlobContainerName);
 
-            await container.CreateIfNotExistsAsync();
-
             try
-            {
+            {          
+                await container.CreateIfNotExistsAsync();
                 var client = container.GetBlobClient(fileName);
                 await client.UploadAsync(stream);
                 return true;
