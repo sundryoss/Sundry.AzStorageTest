@@ -1,50 +1,54 @@
-﻿using Azure;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.IO;
-using System.Reflection.Metadata;
-using SystemUnderTest;
-using static System.Reflection.Metadata.BlobBuilder;
+using System.Diagnostics.CodeAnalysis;
+using SystemUnderTest.Interface;
 
-
-using IHost host = Host
-    .CreateDefaultBuilder(args)
-    .ConfigureAppConfiguration((context, config) =>
-    {
-        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-              .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
-    })
-.Build();
-
-
-
-await UploadFileToAzBlob(host.Services);
-await host.RunAsync();
-
-
-static async Task UploadFileToAzBlob(IServiceProvider services)
+namespace SystemUnderTest
 {
-    var config = services.GetRequiredService<IConfiguration>();
-    var azBlobConnectionString = config.GetValue<string>("AzBlobSettings:ConnectionString");
-    var azBlobContainerName = config.GetValue<string>("AzBlobSettings:ContainerName");
-    var fileName = config.GetValue<string>("AzBlobSettings:FileName")!;
-
-    using FileStream stream = new(fileName, FileMode.Open);
-    
-    BlobContainerClient container = new (azBlobConnectionString, azBlobContainerName);
-
-    await container.CreateIfNotExistsAsync();
-
-    try
+    public class Program
     {
-        var client = container.GetBlobClient(fileName);
-        await client.UploadAsync(stream);
-    }
-    catch (Exception)
-    {
-        throw;
+        [ExcludeFromCodeCoverage]
+        public static async Task Main(string[] args)
+        {
+            var host = CreateHostBuilder(args).Build();
+            var azBlobService = host.Services.GetRequiredService<IAzBlobService>();
+            await UploadFileToAzBlobAsync(azBlobService);
+
+            await host.RunAsync();
+        }
+        [ExcludeFromCodeCoverage]
+         static IHostBuilder CreateHostBuilder(string[] args) =>
+           Host
+            .CreateDefaultBuilder(args)
+            .ConfigureServices((context, services) =>
+            {
+                services.AddSingleton<IAzBlobService, AzBlobService>();
+            })
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                      .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
+            });
+
+        public static async Task UploadFileToAzBlobAsync(IAzBlobService azBlobService)
+        {
+            var result = await azBlobService.UploadFileToAzBlobAsync("samplefile.txt");
+
+            if (result)
+            {
+                Console.WriteLine("File uploaded successfully");
+            }
+            else
+            {
+                Console.WriteLine("File upload failed");
+            }
+        }
+
     }
 }
+
+
+
+
+
