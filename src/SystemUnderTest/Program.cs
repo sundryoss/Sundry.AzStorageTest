@@ -45,6 +45,13 @@ namespace SystemUnderTest
             }
         }
 
+        public static async Task DownloadBlobAsync(IAzBlobService azBlobService)
+        {
+            var downloadResult = await azBlobService.DownloadBlobAsync("samplefile.txt");
+            string downloadedData = downloadResult.Content.ToString();
+            Console.WriteLine("Downloaded data: {0}", downloadedData);
+        }
+
     }
 }
 

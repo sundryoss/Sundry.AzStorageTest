@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs.Models;
 using Moq;
 using SystemUnderTest.Interface;
 
@@ -33,6 +34,22 @@ namespace SystemUnderTest.UnitTest
 
             await Program.UploadFileToAzBlobAsync(azBlobService.Object);
             Assert.Contains("File upload failed", Output.ToString());
+        }
+
+        [Fact]
+        public async Task File_Download_Success()
+        {
+            var mockedData = "mocked";
+
+            var azBlobService = new Mock<IAzBlobService>();
+            var blobDownloadResult = BlobsModelFactory.BlobDownloadResult(BinaryData.FromString(mockedData));
+
+            azBlobService
+                .Setup(x => x.DownloadBlobAsync(It.IsAny<string>()))
+                .ReturnsAsync(blobDownloadResult);
+
+            await Program.DownloadBlobAsync(azBlobService.Object);
+            Assert.Contains($"Downloaded data: {mockedData}", Output.ToString());
         }
     }
 }
