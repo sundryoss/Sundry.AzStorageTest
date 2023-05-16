@@ -8,7 +8,7 @@ namespace SystemUnderTest.IntegrationTest
         private readonly StringWriter Output = new();
         private readonly IAzBlobService _azBlobService;
 
-        public IntegrationTests(IAzBlobService azBlobService, AzuriteContainer azuriteInstance)
+        public IntegrationTests(IAzBlobService azBlobService, AzuriteContainer _)
         {
             Console.SetOut(Output);
            _azBlobService = azBlobService;
