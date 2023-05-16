@@ -5,7 +5,7 @@ namespace SystemUnderTest.UnitTest
 {
     public class UnitTests
     {
-       private readonly StringWriter Output = new StringWriter();
+       private readonly StringWriter Output = new ();
         public UnitTests()
         {
             Console.SetOut(Output);

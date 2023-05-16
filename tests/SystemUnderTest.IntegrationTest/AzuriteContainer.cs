@@ -18,7 +18,6 @@ namespace SystemUnderTest.IntegrationTest
                                 })
                                 .WithPortBinding(DEFAULT_BLOB_PORT)
                                 .Build();
-
         }
         public async Task DisposeAsync()
         {

@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 
 namespace SystemUnderTest.Interface
@@ -10,17 +11,17 @@ namespace SystemUnderTest.Interface
 
     public class AzBlobService : IAzBlobService
     {
-        private readonly string azBlobConnectionString;
-        private readonly string azBlobContainerName;
-        public AzBlobService(IConfiguration  configuration)
+        private readonly BlobServiceClient _blobServiceClient;
+        private readonly AzBlobSettingsOption _azBlobSettingsOption;
+        public AzBlobService(IAzureClientFactory<BlobServiceClient> blobServiceClientFactory, AzBlobSettingsOption azBlobSettingsOption)
         {
-            azBlobConnectionString = configuration.GetValue<string>("AzBlobSettings:ConnectionString")!;
-            azBlobContainerName = configuration.GetValue<string>("AzBlobSettings:ContainerName")!;
+            _azBlobSettingsOption = azBlobSettingsOption;
+            _blobServiceClient = blobServiceClientFactory.CreateClient(_azBlobSettingsOption.ConnectionName);
         }
         public async Task<bool> UploadFileToAzBlobAsync(string fileName)
         {
             using FileStream stream = new(fileName, FileMode.Open);
-            BlobContainerClient container = new(azBlobConnectionString, azBlobContainerName);
+            BlobContainerClient container = _blobServiceClient.GetBlobContainerClient(_azBlobSettingsOption.ContainerName);
 
             try
             {

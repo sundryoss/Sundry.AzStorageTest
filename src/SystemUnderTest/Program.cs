@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
@@ -6,7 +7,7 @@ using SystemUnderTest.Interface;
 
 namespace SystemUnderTest
 {
-    public class Program
+    public static class Program
     {
         [ExcludeFromCodeCoverage]
         public static async Task Main(string[] args)
@@ -18,18 +19,27 @@ namespace SystemUnderTest
             await host.RunAsync();
         }
         [ExcludeFromCodeCoverage]
-         static IHostBuilder CreateHostBuilder(string[] args) =>
-           Host
-            .CreateDefaultBuilder(args)
-            .ConfigureServices((context, services) =>
-            {
-                services.AddSingleton<IAzBlobService, AzBlobService>();
-            })
-            .ConfigureAppConfiguration((context, config) =>
-            {
-                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                      .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
-            });
+        static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host
+           .CreateDefaultBuilder(args)
+           .ConfigureServices((context, services) =>
+           {
+               var azBlobSettingsOption = context.Configuration.GetSection(AzBlobSettingsOption.ConfigKey).Get<AzBlobSettingsOption>()!;
+
+               services.AddAzureClients(builder => builder
+                                                    .AddBlobServiceClient(azBlobSettingsOption.ConnectionString)
+                                                    .WithName(azBlobSettingsOption.ConnectionName));
+
+               services.AddSingleton(azBlobSettingsOption);
+               services.AddSingleton<IAzBlobService, AzBlobService>();
+           })
+           .ConfigureAppConfiguration((context, config) =>
+           {
+               config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                     .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
+           });
+        }
 
         public static async Task UploadFileToAzBlobAsync(IAzBlobService azBlobService)
         {
@@ -44,11 +54,5 @@ namespace SystemUnderTest
                 Console.WriteLine("File upload failed");
             }
         }
-
     }
 }
-
-
-
-
-
